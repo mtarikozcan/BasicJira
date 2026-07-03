@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BasicJira.Api/BasicJira.Api.csproj" />
+  <Project Path="BasicJira.Application/BasicJira.Application.csproj" />
+  <Project Path="BasicJira.Domain/BasicJira.Domain.csproj" />
+  <Project Path="BasicJira.Infrastructure/BasicJira.Infrastructure.csproj" />
+</Solution>
