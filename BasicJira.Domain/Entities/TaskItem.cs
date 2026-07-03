@@ -25,4 +25,10 @@ namespace BasicJira.Domain.Entities;
 
     public ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
 
+    /*
+     ICollection<T>, bir entity'nin birden fazla ilişkili nesneye sahip olduğunu ifade eder.
+     List yerine interface kullanılarak koleksiyonun nasıl tutulduğu soyutlanır.
+     EF Core bu koleksiyonu yönetebilir ve gerektiğinde farklı koleksiyon tipleri kullanılabilir.
+     */
+
 }
