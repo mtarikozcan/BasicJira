@@ -1,4 +1,27 @@
+using BasicJira.Application.Common.Interfaces;
+using BasicJira.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// registers AppDbContext in the Dependency Injection container.
+// whenever IAppDbContext is requested, AppDbContext will be provided.
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(
+            builder.Configuration.GetConnectionString("DefaultConnection")
+        );
+    // UseSqlServer methodu, Entity Framework Core'un SQL Server veritabanı sağlayıcısını kullanmasını sağlar.
+});
+
+
+// maps the abstraciton (IAppDbContext) to its concrete implementation
+
+builder.Services.AddScoped<IAppDbContext>(provider =>
+    provider.GetRequiredService<AppDbContext>());
+
+
 
 // Add services to the container.
 
