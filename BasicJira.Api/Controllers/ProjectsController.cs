@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Projects.CreateProject;
+using BasicJira.Application.Projects.GetProjects;   
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,13 @@ public class ProjectsController : ControllerBase
         var projectId = await _mediator.Send(command);
 
         return Ok(projectId);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var projects = await _mediator.Send(new GetProjectsQuery());
+        return Ok(projects);
     }
 
 
