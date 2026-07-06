@@ -29,3 +29,7 @@ public class ProjectsController : ControllerBase
 
 // Thin Controller, Fat Handler
 // controller request alıp mediatore gönder. response dondur. controllerda business logic yok. handlerda var.
+
+
+// aslında şunu yakalamak istiyoruz. http request -> projects controller -> IMediator.Send() -> CreateProjectCommandHandler -> IAppDbContext -> AppDbContext -> SQL server. 
+
