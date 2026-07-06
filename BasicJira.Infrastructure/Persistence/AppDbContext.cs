@@ -33,17 +33,14 @@ public class AppDbContext : DbContext, IAppDbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Prevents SQL Server multiple cascade path error.
-        // A TaskComment is connected to both TaskItem and AppUser.
-        // If both relationships use Cascade Delete, SQL Server sees multiple delete paths.
+
         modelBuilder.Entity<TaskComment>()
             .HasOne(x => x.User)
             .WithMany(x => x.Comments)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Prevents deleting a user from automatically deleting assigned tasks.
-        // In real systems, users are usually deactivated instead of deleted.
+
         modelBuilder.Entity<TaskItem>()
             .HasOne(x => x.AssignedUser)
             .WithMany(x => x.AssignedTasks)
