@@ -15,4 +15,8 @@
     <ProjectReference Include="..\BasicJira.Domain\BasicJira.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tasks\Queries\" />
+  </ItemGroup>
+
 </Project>

@@ -12,14 +12,14 @@ namespace BasicJira.Domain.Entities;
     public Guid ProjectId { get; set; }
     public Project Project { get; set; } = null!;
 
-    public Guid AssignedUserId { get; set; }
-    public AppUser AssignedUser { get; set; } = null!;
+    public Guid? AssignedUserId { get; set; }
+    public AppUser? AssignedUser { get; set; } = null!;
 
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
 
     public TaskPriority Priority { get; set; }
-    public TaskStatus Status { get; set; }
+    public TaskItemStatus Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
