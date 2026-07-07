@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using BasicJira.Application.Common.Interfaces;
+using BasicJira.Application.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BasicJira.Application.Projects.GetProjects;
+namespace BasicJira.Application.Projects.Queries.GetProjects;
 
 public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, List<ProjectDto>>
 // IRequestHandler arayüzü uygulanıyor. uygulamanın bir yerinde GetProjectsQuery gönderildiğinde, MediatR arayıcılığıyla bu

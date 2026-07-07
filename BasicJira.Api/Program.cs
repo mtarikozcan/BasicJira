@@ -1,5 +1,5 @@
 using BasicJira.Application.Common.Interfaces;
-using BasicJira.Application.Projects.CreateProject;
+using BasicJira.Application.Projects.Commands.CreateProject;
 using BasicJira.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 

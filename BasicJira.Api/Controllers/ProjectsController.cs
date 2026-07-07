@@ -1,5 +1,5 @@
-﻿using BasicJira.Application.Projects.CreateProject;
-using BasicJira.Application.Projects.GetProjects;   
+﻿using BasicJira.Application.Projects.Commands.CreateProject;
+using BasicJira.Application.Projects.Queries.GetProjects;   
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -6,7 +6,7 @@ using BasicJira.Application.Common.Interfaces;
 using BasicJira.Domain.Entities;
 using MediatR;
 
-namespace BasicJira.Application.Projects.CreateProject;
+namespace BasicJira.Application.Projects.Commands.CreateProject;
 
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, Guid>
 {

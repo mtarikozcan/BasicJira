@@ -4,7 +4,7 @@ using System.Text;
 
 using MediatR;
 
-namespace BasicJira.Application.Projects.CreateProject;
+namespace BasicJira.Application.Projects.Commands.CreateProject;
 
 public record CreateProjectCommand(
         string Name,

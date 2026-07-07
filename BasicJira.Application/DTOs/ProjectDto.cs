@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BasicJira.Application.Projects.GetProjects;
+namespace BasicJira.Application.DTOs;
 
 public class  ProjectDto
 {
