@@ -1,49 +1,32 @@
-using BasicJira.Application.Common.Interfaces;
-using BasicJira.Application.Projects.Commands.CreateProject;
-using BasicJira.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using BasicJira.Application;
+using BasicJira.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(); // api endpointlerini barındıran controller sınıflarını "ProjectsController" sisteme dahil edilir.
+// Controllers
+builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer(); 
-                                            // swaggerin arka planda api rotalarını bulup swagger dokümantasyonunu
-                                            // oluşturabilmesi için gerekli olan servisi sisteme dahil eder.
+// OpenAPI / Swagger
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Clean Architecture registrations
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseSqlServer(                                                   // EF Core'un SQL Server ile çalışabilmesi için gerekli olan servisi sisteme dahil eder.
-        builder.Configuration.GetConnectionString("DefaultConnection"));    // appsettings.json dosyasında tanımlı olan "DefaultConnection" isimli connection stringi alır ve EF Core'a iletir.
-});     
+var app = builder.Build();
 
-builder.Services.AddScoped<IAppDbContext>(provider =>           // application katmanının SQL yapısını direkt bilmemesi için IAppDbContext interface'i ile AppDbContext sınıfını sisteme dahil eder.    
-    provider.GetRequiredService<AppDbContext>());
-
-
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(CreateProjectCommand).Assembly);
-});
-
-builder.Services.AddOpenApi();
-
-var app = builder.Build();  // middleware aşaması başlar
-
+// Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();       //swagger üzerinden execute edildiğinde arka planda oluşan HTTP URL isteğinin, gidipi doğru controllerı uygun metodu (HttpPost) bulmasını saglar
+app.MapControllers();
 
 app.Run();
-
-
