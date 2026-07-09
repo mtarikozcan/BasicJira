@@ -1,5 +1,6 @@
 using BasicJira.Application;
 using BasicJira.Infrastructure;
+using BasicJira.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
