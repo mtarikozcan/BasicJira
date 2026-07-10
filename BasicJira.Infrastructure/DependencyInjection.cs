@@ -6,6 +6,8 @@ using BasicJira.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using BasicJira.Infrastructure.Repositories;
+
 
 namespace BasicJira.Infrastructure;
 
@@ -23,6 +25,16 @@ public static class DependencyInjection
 
         services.AddScoped<IAppDbContext>(provider =>
             provider.GetRequiredService<AppDbContext>());
+
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        services.AddScoped<IUnitOfWork>(provider =>
+            provider.GetRequiredService<AppDbContext>());
+
 
         return services;
     }
