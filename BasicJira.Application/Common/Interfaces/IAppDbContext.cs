@@ -18,6 +18,10 @@ public interface IAppDbContext
 
     DbSet<TaskComment> TaskComments { get; }
 
+
+    // Generic repository needs this method to access the correct DbSet dynamically.
+    DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
     // handlers call this after Add/Update/Delete operations.
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);

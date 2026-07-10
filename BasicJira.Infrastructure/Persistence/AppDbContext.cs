@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BasicJira.Infrastructure.Persistence;
 
-public class AppDbContext : DbContext, IAppDbContext
+public class AppDbContext : DbContext, IAppDbContext, IUnitOfWork
 {
     // DbContextOptions, connection string ve EF Core ile ilgili ayarları içerir.
     // Bu sayede AppDbContext kendi içinde connection string tutmaz. 
