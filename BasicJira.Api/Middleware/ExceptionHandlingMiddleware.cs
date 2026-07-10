@@ -13,14 +13,14 @@ public class ExceptionHandlingMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)  // bu metod requestin tüm yolculuğunu try-catch bloğuna alır
     {
         try
         {
             await _next(context);
         }
 
-        catch (ValidationException ex)
+        catch (ValidationException ex)     // fluentvalidationdan fırlattığımız validationexception catch 
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
@@ -41,7 +41,7 @@ public class ExceptionHandlingMiddleware
                 JsonSerializer.Serialize(response));
         }
 
-        catch (Exception)
+        catch (Exception)       //system error 
         {
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
