@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BasicJira.Infrastructure.Repositories;
 
-public class Repository<TEntity> : IRepository<TEntity>
+public class Repository<TEntity> : IRepository<TEntity>     // jenerik interface'in doldurulması 
     where TEntity : class
 {
-    protected readonly IAppDbContext Context;
+    protected readonly IAppDbContext Context;       //
     protected readonly DbSet<TEntity> DbSet;
 
     public Repository(IAppDbContext context)

@@ -13,3 +13,5 @@ public interface IProjectRepository : IRepository<Project>
 
     Task<List<ProjectDto>> GetAllAsync(CancellationToken cancellationToken);
 }
+
+// jenerik + entity özgü sınıflar. ortak crud methodları inherit aldı 

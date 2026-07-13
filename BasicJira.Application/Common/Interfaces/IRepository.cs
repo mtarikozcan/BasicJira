@@ -15,3 +15,5 @@ public interface IRepository<TEntity>
 
     void Remove(TEntity entity);
 }
+
+// tüm entityler içerisinde bulunan metodları tanımladık. amac dry engellemek için jenerik interface 
