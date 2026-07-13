@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BasicJira.Infrastructure.Repositories;
-
+using BasicJira.Infrastructure.Email;
 
 namespace BasicJira.Infrastructure;
 
@@ -35,6 +35,10 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork>(provider =>
             provider.GetRequiredService<AppDbContext>());
 
+        services.Configure<EmailSettings>(
+        configuration.GetSection(EmailSettings.SectionName));
+
+        services.AddTransient<IEmailService, EmailService>();
 
         return services;
     }
