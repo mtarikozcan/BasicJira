@@ -1,4 +1,5 @@
-﻿using BasicJira.Application.Tasks.Commands.CreateTask;
+﻿using BasicJira.Application.Tasks.Commands.AssignUserToTask;
+using BasicJira.Application.Tasks.Commands.CreateTask;
 using BasicJira.Application.Tasks.Commands.DeleteTask;
 using BasicJira.Application.Tasks.Commands.UpdateTask;
 using MediatR;
@@ -58,6 +59,14 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateTaskCommand command)
     {
         await _mediator.Send(command with { Id = id });
+
+        return Ok();
+    }
+
+    [HttpPut("{id:guid}/assign-user/{userId:guid}")]
+    public async Task<IActionResult> AssignUser(Guid id, Guid userId)
+    {
+        await _mediator.Send(new AssignUserToTaskCommand(id, userId));
 
         return Ok();
     }
