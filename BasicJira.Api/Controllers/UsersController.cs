@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Users.Commands.CreateUser;
+using BasicJira.Application.Users.Queries.GetUserById;
 using BasicJira.Application.Users.Queries.GetUsers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -30,5 +31,14 @@ public class UsersController : ControllerBase
         var users = await _mediator.Send(new GetUsersQuery());
 
         return Ok(users);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var query = new GetUserByIdQuery(id);
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
     }
 }
