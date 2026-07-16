@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Projects.Commands.CreateProject;
+using BasicJira.Application.Projects.Commands.DeleteProject;
 using BasicJira.Application.Projects.Commands.UpdateProject;
 using BasicJira.Application.Projects.Queries.GetProjectById;
 using BasicJira.Application.Projects.Queries.GetProjects;   
@@ -46,6 +47,14 @@ public class ProjectsController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateProjectCommand command)
     {
         await _mediator.Send(command with { Id = id });
+
+        return Ok();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteProjectCommand(id));
 
         return Ok();
     }
