@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Users.Commands.CreateUser;
+using BasicJira.Application.Users.Commands.UpdateUser;
 using BasicJira.Application.Users.Queries.GetUserById;
 using BasicJira.Application.Users.Queries.GetUsers;
 using MediatR;
@@ -40,5 +41,13 @@ public class UsersController : ControllerBase
         var result = await _mediator.Send(query);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, UpdateUserCommand command)
+    {
+        await _mediator.Send(command with { Id = id });
+
+        return Ok();
     }
 }
