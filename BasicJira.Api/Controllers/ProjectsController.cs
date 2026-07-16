@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Projects.Commands.CreateProject;
+using BasicJira.Application.Projects.Queries.GetProjectById;
 using BasicJira.Application.Projects.Queries.GetProjects;   
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,15 @@ public class ProjectsController : ControllerBase
         return Ok(projects);
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var query = new GetProjectByIdQuery(id);
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
+    }
+
 
 }
 
@@ -40,4 +50,3 @@ public class ProjectsController : ControllerBase
 
 
 // aslında şunu yakalamak istiyoruz. http request -> projects controller -> IMediator.Send() -> CreateProjectCommandHandler -> IAppDbContext -> AppDbContext -> SQL server. 
-
