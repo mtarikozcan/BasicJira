@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Comments.Commands.CreateComment;
+using BasicJira.Application.Comments.Commands.UpdateComment;
 using BasicJira.Application.Comments.Queries.GetCommentsByTask;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,5 +32,13 @@ public class CommentsController : ControllerBase
         var result = await _mediator.Send(query);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, UpdateCommentCommand command)
+    {
+        await _mediator.Send(command with { Id = id });
+
+        return Ok();
     }
 }
