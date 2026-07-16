@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Tasks.Commands.CreateTask;
+using BasicJira.Application.Tasks.Commands.UpdateTask;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using BasicJira.Application.Tasks.Queries.GetTaskById;
@@ -50,5 +51,13 @@ public class TasksController : ControllerBase
         var result = await _mediator.Send(query);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, UpdateTaskCommand command)
+    {
+        await _mediator.Send(command with { Id = id });
+
+        return Ok();
     }
 }
