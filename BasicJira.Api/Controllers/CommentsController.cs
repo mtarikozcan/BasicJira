@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Comments.Commands.CreateComment;
+using BasicJira.Application.Comments.Queries.GetCommentsByTask;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,5 +22,14 @@ public class CommentsController : ControllerBase
         var commentId = await _mediator.Send(command);
 
         return Ok(commentId);
+    }
+
+    [HttpGet("task/{taskId:guid}")]
+    public async Task<IActionResult> GetByTask(Guid taskId)
+    {
+        var query = new GetCommentsByTaskQuery(taskId);
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
     }
 }
