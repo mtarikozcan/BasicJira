@@ -1,6 +1,7 @@
 ﻿using BasicJira.Application.Tasks.Commands.AssignUserToTask;
 using BasicJira.Application.Tasks.Commands.CreateTask;
 using BasicJira.Application.Tasks.Commands.DeleteTask;
+using BasicJira.Application.Tasks.Commands.UnassignUserFromTask;
 using BasicJira.Application.Tasks.Commands.UpdateTask;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,14 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> AssignUser(Guid id, Guid userId)
     {
         await _mediator.Send(new AssignUserToTaskCommand(id, userId));
+
+        return Ok();
+    }
+
+    [HttpPut("{id:guid}/unassign-user")]
+    public async Task<IActionResult> UnassignUser(Guid id)
+    {
+        await _mediator.Send(new UnassignUserFromTaskCommand(id));
 
         return Ok();
     }
