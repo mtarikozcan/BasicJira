@@ -1,8 +1,11 @@
+using BasicJira.Api.Configuration;
+using BasicJira.Api.Middleware;
 using BasicJira.Application;
 using BasicJira.Infrastructure;
-using BasicJira.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+await builder.Configuration.AddVaultSecretsAsync();
 
 // Controllers
 builder.Services.AddControllers();
