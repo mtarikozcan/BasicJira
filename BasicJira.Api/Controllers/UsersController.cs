@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Users.Commands.CreateUser;
+using BasicJira.Application.Users.Commands.DeleteUser;
 using BasicJira.Application.Users.Commands.UpdateUser;
 using BasicJira.Application.Users.Queries.GetUserById;
 using BasicJira.Application.Users.Queries.GetUsers;
@@ -47,6 +48,14 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateUserCommand command)
     {
         await _mediator.Send(command with { Id = id });
+
+        return Ok();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteUserCommand(id));
 
         return Ok();
     }
