@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using BasicJira.Application.Tasks.Queries.GetTaskById;
 using BasicJira.Application.Tasks.Queries.GetTasks;
+using BasicJira.Application.Tasks.Queries.GetTasksByProjectId;
 
 namespace BasicJira.Api.Controllers;
 
@@ -31,6 +32,15 @@ public class TasksController : ControllerBase
         var tasks = await _mediator.Send(new GetTasksQuery());
 
         return Ok(tasks);
+    }
+
+    [HttpGet("project/{projectId:guid}")]
+    public async Task<IActionResult> GetByProjectId(Guid projectId)
+    {
+        var query = new GetTasksByProjectIdQuery(projectId);
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
     }
 
     [HttpGet("{id:guid}")]
