@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Projects.Commands.CreateProject;
+using BasicJira.Application.Projects.Commands.UpdateProject;
 using BasicJira.Application.Projects.Queries.GetProjectById;
 using BasicJira.Application.Projects.Queries.GetProjects;   
 using MediatR;
@@ -39,6 +40,14 @@ public class ProjectsController : ControllerBase
         var result = await _mediator.Send(query);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, UpdateProjectCommand command)
+    {
+        await _mediator.Send(command with { Id = id });
+
+        return Ok();
     }
 
 
