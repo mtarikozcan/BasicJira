@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Users.Commands.CreateUser;
+using BasicJira.Application.Users.Queries.GetUsers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,5 +22,13 @@ public class UsersController : ControllerBase
         var userId = await _mediator.Send(command);
 
         return Ok(userId);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var users = await _mediator.Send(new GetUsersQuery());
+
+        return Ok(users);
     }
 }
