@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Tasks.Commands.CreateTask;
+using BasicJira.Application.Tasks.Commands.DeleteTask;
 using BasicJira.Application.Tasks.Commands.UpdateTask;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,14 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateTaskCommand command)
     {
         await _mediator.Send(command with { Id = id });
+
+        return Ok();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteTaskCommand(id));
 
         return Ok();
     }
