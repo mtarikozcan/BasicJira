@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Tasks.Commands.AssignUserToTask;
+using BasicJira.Application.Tasks.Commands.ChangeTaskPriority;
 using BasicJira.Application.Tasks.Commands.ChangeTaskStatus;
 using BasicJira.Application.Tasks.Commands.CreateTask;
 using BasicJira.Application.Tasks.Commands.DeleteTask;
@@ -69,6 +70,14 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> AssignUser(Guid id, Guid userId)
     {
         await _mediator.Send(new AssignUserToTaskCommand(id, userId));
+
+        return Ok();
+    }
+
+    [HttpPut("{id:guid}/priority")]
+    public async Task<IActionResult> ChangePriority(Guid id, ChangeTaskPriorityCommand command)
+    {
+        await _mediator.Send(command with { TaskId = id });
 
         return Ok();
     }
