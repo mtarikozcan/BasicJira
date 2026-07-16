@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Comments.Commands.CreateComment;
+using BasicJira.Application.Comments.Commands.DeleteComment;
 using BasicJira.Application.Comments.Commands.UpdateComment;
 using BasicJira.Application.Comments.Queries.GetCommentsByTask;
 using MediatR;
@@ -38,6 +39,14 @@ public class CommentsController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateCommentCommand command)
     {
         await _mediator.Send(command with { Id = id });
+
+        return Ok();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteCommentCommand(id));
 
         return Ok();
     }
