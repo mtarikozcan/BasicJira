@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using BasicJira.Application.Tasks.Queries.GetTaskById;
+using BasicJira.Application.Tasks.Queries.GetTasks;
 
 namespace BasicJira.Api.Controllers;
 
@@ -22,6 +23,14 @@ public class TasksController : ControllerBase
         var taskId = await _mediator.Send(command);
 
         return Ok(taskId);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var tasks = await _mediator.Send(new GetTasksQuery());
+
+        return Ok(tasks);
     }
 
     [HttpGet("{id:guid}")]
