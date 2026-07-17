@@ -30,7 +30,7 @@ public static class VaultConfigurationExtensions
                 "Vault:RoleId ve Vault:SecretId değerlerini kontrol edin.");
         }
 
-        var authMethod = new AppRoleAuthMethodInfo(roleId, secretId);
+        var authMethod = new AppRoleAuthMethodInfo(roleId, secretId); // 
 
         var clientSettings = new VaultClientSettings(
             address,

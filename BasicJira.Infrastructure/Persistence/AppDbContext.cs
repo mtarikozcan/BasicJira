@@ -33,6 +33,9 @@ public class AppDbContext : DbContext, IAppDbContext, IUnitOfWork
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<AppUser>()
+            .HasIndex(user => user.Email)           // Email alanına unique index ekler, böylece aynı email ile birden fazla kullanıcı oluşturulamaz.
+            .IsUnique();
 
         modelBuilder.Entity<TaskComment>()
             .HasOne(x => x.User)
