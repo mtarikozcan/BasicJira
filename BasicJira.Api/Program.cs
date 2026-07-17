@@ -5,7 +5,8 @@ using BasicJira.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-await builder.Configuration.AddVaultSecretsAsync();
+await builder.Configuration.AddVaultSecretsAsync();     // infra structure servisleri register edilmeden önce çalıştırılıyor -> email service ve 
+                                                        // dbcontext config okuma yapmadan önce vaulttan secretların yüklenmiş olması gerekir.
 
 // Controllers
 builder.Services.AddControllers();

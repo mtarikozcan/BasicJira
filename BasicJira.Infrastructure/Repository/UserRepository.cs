@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Interfaces;
 using BasicJira.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +11,23 @@ public class UserRepository : Repository<AppUser>, IUserRepository
     {
     }
 
+    public async Task<AppUser?> GetByEmailAsync(
+        string email,
+        CancellationToken cancellationToken = default)
+    {
+        return await Context.Users
+            .FirstOrDefaultAsync(
+                user => user.Email == email,
+                cancellationToken);
+    }
+
     public async Task<bool> ExistsAsync(
         Guid userId,
         CancellationToken cancellationToken)
     {
         return await Context.Users
-            .AnyAsync(x => x.Id == userId, cancellationToken);
+            .AnyAsync(
+                user => user.Id == userId,
+                cancellationToken);
     }
 }
