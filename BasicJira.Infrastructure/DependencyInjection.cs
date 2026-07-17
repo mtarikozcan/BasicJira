@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BasicJira.Application.Common.Interfaces;
 using BasicJira.Infrastructure.Persistence;
+using BasicJira.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         services.AddScoped<IUnitOfWork>(provider =>
             provider.GetRequiredService<AppDbContext>());
