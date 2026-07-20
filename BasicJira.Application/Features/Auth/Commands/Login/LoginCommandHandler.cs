@@ -4,20 +4,23 @@ using MediatR;
 namespace BasicJira.Application.Features.Auth.Commands.Login;
 
 public sealed class LoginCommandHandler
-    : IRequestHandler<LoginCommand, Guid>
+    : IRequestHandler<LoginCommand, string>
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
     public LoginCommandHandler(
         IUserRepository userRepository,
-        IPasswordHasher passwordHasher)
+        IPasswordHasher passwordHasher,
+        IJwtTokenGenerator jwtTokenGenerator)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+        _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<Guid> Handle(
+    public async Task<string> Handle(
         LoginCommand request,
         CancellationToken cancellationToken)
     {
@@ -29,22 +32,15 @@ public sealed class LoginCommandHandler
             normalizedEmail,
             cancellationToken);
 
-        if (user is null)
+        if (user is null ||
+            !_passwordHasher.VerifyPassword(
+                request.Password,
+                user.PasswordHash))
         {
             throw new UnauthorizedAccessException(
                 "E-posta veya şifre hatalı.");
         }
 
-        var passwordIsValid = _passwordHasher.VerifyPassword(
-            request.Password,
-            user.PasswordHash);
-
-        if (!passwordIsValid)
-        {
-            throw new UnauthorizedAccessException(
-                "E-posta veya şifre hatalı.");
-        }
-
-        return user.Id;
+        return _jwtTokenGenerator.GenerateToken(user);
     }
 }

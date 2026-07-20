@@ -2,6 +2,8 @@
 using BasicJira.Application.Features.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BasicJira.Api.Controllers;
 
@@ -21,13 +23,12 @@ public sealed class AuthController : ControllerBase
         RegisterCommand command,
         CancellationToken cancellationToken)
     {
-        var userId = await _sender.Send(
-            command,
-            cancellationToken);
+        var userId = await _sender.Send(command, cancellationToken);
 
-        return StatusCode(
-            StatusCodes.Status201Created,
-            new { id = userId });
+        return StatusCode(StatusCodes.Status201Created, new
+        {
+            userId
+        });
     }
 
     [HttpPost("login")]
@@ -35,13 +36,26 @@ public sealed class AuthController : ControllerBase
         LoginCommand command,
         CancellationToken cancellationToken)
     {
-        var userId = await _sender.Send(
-            command,
-            cancellationToken);
+        var token = await _sender.Send(command, cancellationToken);
 
         return Ok(new
         {
-            userId
+            token
+        });
+    }
+
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult Me()
+    {
+        return Ok(new
+        {
+            isAuthenticated = User.Identity?.IsAuthenticated,
+            claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            })
         });
     }
 }
