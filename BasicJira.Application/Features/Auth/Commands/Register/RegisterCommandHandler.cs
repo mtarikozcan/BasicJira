@@ -1,4 +1,5 @@
 ﻿using BasicJira.Application.Common.Interfaces;
+using BasicJira.Application.Common.Authorization;
 using BasicJira.Domain.Entities;
 using MediatR;
 
@@ -45,7 +46,7 @@ public sealed class RegisterCommandHandler
             FullName = request.Name.Trim(),
             Email = normalizedEmail,
             PasswordHash = _passwordHasher.HashPassword(request.Password),
-            Role = "User",
+            Role = Roles.User,
             CreatedAt = DateTime.UtcNow
         };
 

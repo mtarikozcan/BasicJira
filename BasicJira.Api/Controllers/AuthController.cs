@@ -1,8 +1,9 @@
-﻿using BasicJira.Application.Features.Auth.Commands.Login;
+﻿using BasicJira.Application.Common.Authorization;
+using BasicJira.Application.Features.Auth.Commands.Login;
 using BasicJira.Application.Features.Auth.Commands.Register;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace BasicJira.Api.Controllers;
@@ -56,6 +57,36 @@ public sealed class AuthController : ControllerBase
                 claim.Type,
                 claim.Value
             })
+        });
+    }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpGet("admin")]
+    public IActionResult AdminOnly()
+    {
+        return Ok(new
+        {
+            Message = "Admin endpoint erişimi başarılı."
+        });
+    }
+
+    [Authorize(Roles = Roles.User)]
+    [HttpGet("user")]
+    public IActionResult UserOnly()
+    {
+        return Ok(new
+        {
+            Message = "User endpoint erişimi başarılı."
+        });
+    }
+
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
+    [HttpGet("profile")]
+    public IActionResult Profile()
+    {
+        return Ok(new
+        {
+            Message = "Giriş yapmış kullanıcı erişimi başarılı."
         });
     }
 }
