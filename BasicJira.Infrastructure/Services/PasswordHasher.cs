@@ -6,11 +6,11 @@ public sealed class PasswordHasher : IPasswordHasher
 {
     public string HashPassword(string password)
     {
-        return BCrypt.Net.BCrypt.HashPassword(password);
+        return BCrypt.Net.BCrypt.HashPassword(password);        // ipasswordhasher implemente ediliyor ve BCrypt kütüphanesi kullanılarak şifre hashleniyor.
     }
 
     public bool VerifyPassword(
-        string password,
+        string password,              
         string passwordHash)
     {
         return BCrypt.Net.BCrypt.Verify(
