@@ -8,13 +8,13 @@ public class AppUser
 {
     public Guid Id { get; set; }
 
-    public string FullName { get; set; } = string.Empty; //why ?
+    public string FullName { get; set; } = string.Empty; 
 
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;       
 
-    public string Role { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;        //rbac için
 
-    public string PasswordHash { get; set; } = string.Empty; 
+    public string PasswordHash { get; set; } = string.Empty; //db de password düz tutulmaz, şifreli algoritmalarla tutulur. yani hashlenir.  
 
     public DateTime CreatedAt { get; set; }
 

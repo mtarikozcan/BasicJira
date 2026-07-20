@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Interfaces;
+using BasicJira.Application.Common.Settings;
+using BasicJira.Infrastructure.Email;
 using BasicJira.Infrastructure.Persistence;
+using BasicJira.Infrastructure.Repositories;
 using BasicJira.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BasicJira.Infrastructure.Repositories;
-using BasicJira.Infrastructure.Email;
-using BasicJira.Application.Common.Settings;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Text;
 
 
 
@@ -65,7 +66,9 @@ public static class DependencyInjection
                         IssuerSigningKey =
                             new SymmetricSecurityKey(
                                 Encoding.UTF8.GetBytes(
-                                    jwtSettings.SecretKey))
+                                    jwtSettings.SecretKey)),
+
+                        RoleClaimType = ClaimTypes.Role
                     };
             });
 
