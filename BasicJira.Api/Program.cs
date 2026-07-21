@@ -4,6 +4,8 @@ using BasicJira.Application;
 using BasicJira.Infrastructure;
 using Microsoft.OpenApi;
 using Serilog;
+using Elastic.Serilog.Sinks;
+using Elastic.Ingest.Elasticsearch.DataStreams;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,16 @@ builder.Host.UseSerilog((context, services, configuration) =>
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console();
+
+        .WriteTo.Console()
+
+        .WriteTo.Elasticsearch(
+            new[] { new Uri("http://localhost:9200") },
+            options =>
+            {
+                options.DataStream =
+                    new DataStreamName("logs", "basicjira", "api");
+            });
 });
 
 
@@ -46,7 +57,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging();     // 
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
