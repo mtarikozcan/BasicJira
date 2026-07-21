@@ -6,6 +6,9 @@
     <File Path="basicjira-localsecrets.txt" />
     <File Path="vault-setup.md" />
   </Folder>
+  <Folder Name="/Çözüm Öğeleri/">
+    <File Path="start-elk.ps1" />
+  </Folder>
   <Project Path="BasicJira.Api/BasicJira.Api.csproj" />
   <Project Path="BasicJira.Application/BasicJira.Application.csproj" />
   <Project Path="BasicJira.Domain/BasicJira.Domain.csproj" />
