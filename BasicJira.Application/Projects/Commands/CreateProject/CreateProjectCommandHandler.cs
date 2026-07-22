@@ -1,4 +1,5 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
 using BasicJira.Domain.Entities;
 using MediatR;
 
@@ -19,6 +20,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
     public async Task<Guid> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
+        
         var project = new Project
         {
             Id = Guid.NewGuid(),
