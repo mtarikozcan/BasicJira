@@ -4,7 +4,7 @@ A production-oriented ASP.NET Core Web API developed during my backend internshi
 
 ## Tech Stack
 
-- ASP.NET Core 9
+- ASP.NET Core 10
 - Entity Framework Core
 - SQL Server
 - Clean Architecture
