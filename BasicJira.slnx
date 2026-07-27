@@ -13,4 +13,5 @@
   <Project Path="BasicJira.Application/BasicJira.Application.csproj" />
   <Project Path="BasicJira.Domain/BasicJira.Domain.csproj" />
   <Project Path="BasicJira.Infrastructure/BasicJira.Infrastructure.csproj" />
+  <Project Path="BasicJira.MailConsumer/BasicJira.MailConsumer.csproj" />
 </Solution>

@@ -68,7 +68,7 @@ public static class DependencyInjection
                                 Encoding.UTF8.GetBytes(
                                     jwtSettings.SecretKey)),
 
-                        RoleClaimType = ClaimTypes.Role
+                        RoleClaimType = ClaimTypes.Role     //
                     };
             });
 

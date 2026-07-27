@@ -116,7 +116,7 @@ public sealed class ExceptionHandlingMiddleware
             return;
         }
 
-        var problemDetails = new ProblemDetails
+        var problemDetails = new ProblemDetails     // 
         {
             Status = statusCode,
             Title = title,
@@ -124,7 +124,7 @@ public sealed class ExceptionHandlingMiddleware
             Instance = context.Request.Path
         };
 
-        problemDetails.Extensions["traceId"] =
+        problemDetails.Extensions["traceId"] =      //
             context.TraceIdentifier;
 
         await context.Response.WriteAsJsonAsync(problemDetails);
