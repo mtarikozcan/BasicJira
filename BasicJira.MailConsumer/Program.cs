@@ -2,6 +2,7 @@
 using BasicJira.MailConsumer.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using BasicJira.MailConsumer.Interfaces;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -32,6 +33,8 @@ builder.Services
         settings => !string.IsNullOrWhiteSpace(settings.Password),
         "SMTP şifresi boş olamaz.")
     .ValidateOnStart();
+
+builder.Services.AddTransient<IEmailService, EmailService>();   //
 
 builder.Services.AddHostedService<RabbitMqMailConsumerService>();
 

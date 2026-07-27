@@ -1,12 +1,13 @@
-﻿using System.Text;
-using System.Text.Json;
-using BasicJira.Contracts.Messages;
+﻿using BasicJira.Contracts.Messages;
+using BasicJira.MailConsumer.Interfaces;
 using BasicJira.MailConsumer.Settings;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using System.Text.Json;
 
 namespace BasicJira.MailConsumer.Services;
 
@@ -14,16 +15,19 @@ public sealed class RabbitMqMailConsumerService : BackgroundService
 {
     private readonly RabbitMqSettings _settings;
     private readonly ILogger<RabbitMqMailConsumerService> _logger;
+    private readonly IEmailService _emailService;
 
     private IConnection? _connection;
     private IChannel? _channel;
 
     public RabbitMqMailConsumerService(
-        IOptions<RabbitMqSettings> options,
-        ILogger<RabbitMqMailConsumerService> logger)
+    IOptions<RabbitMqSettings> options,
+    ILogger<RabbitMqMailConsumerService> logger,
+    IEmailService emailService)
     {
         _settings = options.Value;
         _logger = logger;
+        _emailService = emailService;
     }
 
     protected override async Task ExecuteAsync(
@@ -138,6 +142,9 @@ public sealed class RabbitMqMailConsumerService : BackgroundService
 
             PrintMessage(message);
 
+            await _emailService.SendAsync(
+                message,
+                cancellationToken);
             await _channel.BasicAckAsync(
                 deliveryTag: eventArgs.DeliveryTag,
                 multiple: false,
