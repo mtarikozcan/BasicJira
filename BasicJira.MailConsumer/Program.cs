@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using BasicJira.Contracts.Messages;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -93,7 +94,7 @@ consumer.ReceivedAsync += async (_, eventArgs) =>
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine();
         Console.WriteLine("✗ Mesaj işlenirken hata oluştu.");
-        Console.WriteLine(ex.Message);
+        Console.WriteLine($"Hata: {ex.Message}");
         Console.ResetColor();
 
         await channel.BasicNackAsync(
@@ -139,17 +140,4 @@ static void WriteField(string label, string? value)
     Console.WriteLine(value ?? "-");
 
     Console.ResetColor();
-}
-
-public sealed class SendEmailMessage
-{
-    public Guid MessageId { get; init; }
-
-    public string Recipient { get; init; } = string.Empty;
-
-    public string Subject { get; init; } = string.Empty;
-
-    public string Body { get; init; } = string.Empty;
-
-    public DateTime CreatedAtUtc { get; init; }
 }

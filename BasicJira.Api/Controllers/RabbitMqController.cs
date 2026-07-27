@@ -1,6 +1,7 @@
 ﻿using BasicJira.Api.Contracts.RabbitMq;
 using BasicJira.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using BasicJira.Contracts.Messages;
 
 namespace BasicJira.Api.Controllers;
 
@@ -21,12 +22,12 @@ public sealed class RabbitMqController : ControllerBase
         PublishTestMessageRequest request,
         CancellationToken cancellationToken)
     {
-        var message = new
+        var message = new SendEmailMessage
         {
-            MessageId = Guid.NewGuid(),     //anonymous object , ileride typed message.
-            request.Recipient,
-            request.Subject,
-            request.Body,
+            MessageId = Guid.NewGuid(),
+            Recipient = request.Recipient,
+            Subject = request.Subject,
+            Body = request.Body,
             CreatedAtUtc = DateTime.UtcNow
         };
 

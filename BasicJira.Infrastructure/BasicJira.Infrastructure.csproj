@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BasicJira.Application\BasicJira.Application.csproj" />
     <ProjectReference Include="..\BasicJira.Domain\BasicJira.Domain.csproj" />
+    <ProjectReference Include="..\BasicJira.Contracts\BasicJira.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

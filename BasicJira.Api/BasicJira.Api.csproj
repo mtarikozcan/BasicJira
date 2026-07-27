@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BasicJira.Application\BasicJira.Application.csproj" />
     <ProjectReference Include="..\BasicJira.Infrastructure\BasicJira.Infrastructure.csproj" />
+    <ProjectReference Include="..\BasicJira.Contracts\BasicJira.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
