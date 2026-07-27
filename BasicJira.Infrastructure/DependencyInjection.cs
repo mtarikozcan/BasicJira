@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
-
+using BasicJira.Infrastructure.Messaging;   
 
 
 namespace BasicJira.Infrastructure;
@@ -90,6 +90,11 @@ public static class DependencyInjection
         configuration.GetSection(EmailSettings.SectionName));
 
         services.AddTransient<IEmailService, EmailService>();
+
+        services.Configure<RabbitMqSettings>(
+        configuration.GetSection(RabbitMqSettings.SectionName));
+
+        services.AddTransient<IMessagePublisher, RabbitMqMessagePublisher>();
 
         return services;
     }
