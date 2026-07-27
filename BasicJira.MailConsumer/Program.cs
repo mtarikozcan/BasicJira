@@ -1,12 +1,13 @@
 ﻿using System.Text;
+using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-const string exchangeName = "basicjira.mail.exchange";      // message topology de kullanılcak isimler tanımlandı. 
+const string exchangeName = "basicjira.mail.exchange";
 const string queueName = "basicjira.mail.queue";
 const string routingKey = "mail.send";
 
-var factory = new ConnectionFactory     // rabbit mq bağlantısı için factory oluşturuyoruz. bu da bi secret, ilerde vaulta taşınabilir.
+var factory = new ConnectionFactory
 {
     HostName = "localhost",
     Port = 5672,
@@ -35,7 +36,7 @@ await channel.QueueBindAsync(
     exchange: exchangeName,
     routingKey: routingKey);
 
-await channel.BasicQosAsync(        // bu kısım kritik çünkü consumer mesajları işleyip ACK verene kadar yenisi gönderilmez.
+await channel.BasicQosAsync(
     prefetchSize: 0,
     prefetchCount: 1,
     global: false);
@@ -43,19 +44,63 @@ await channel.BasicQosAsync(        // bu kısım kritik çünkü consumer mesaj
 var consumer = new AsyncEventingBasicConsumer(channel);
 
 consumer.ReceivedAsync += async (_, eventArgs) =>
-{   
-    var body = eventArgs.Body.ToArray();
-    var message = Encoding.UTF8.GetString(body);   
+{
+    try
+    {
+        var body = eventArgs.Body.ToArray();
+        var json = Encoding.UTF8.GetString(body);
 
-    Console.WriteLine();
-    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Yeni mesaj alındı:");
-    Console.WriteLine(message);
+        var message = JsonSerializer.Deserialize<SendEmailMessage>(
+            json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
-    await channel.BasicAckAsync(
-        deliveryTag: eventArgs.DeliveryTag,
-        multiple: false);
+        if (message is null)
+            throw new Exception("Mesaj deserialize edilemedi.");
 
-    Console.WriteLine("Mesaj ACK ile onaylandı.");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine();
+        Console.WriteLine("══════════════════════════════════════════════════════════════");
+        Console.WriteLine("                    YENİ RABBITMQ MESAJI");
+        Console.WriteLine("══════════════════════════════════════════════════════════════");
+        Console.ResetColor();
+
+        WriteField("Alınma", DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"));
+        WriteField("Message Id", message.MessageId.ToString());
+        WriteField("Alıcı", message.Recipient);
+        WriteField("Konu", message.Subject);
+        WriteField("İçerik", message.Body);
+        WriteField(
+            "Oluşturulma",
+            message.CreatedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss"));
+
+        await channel.BasicAckAsync(
+            deliveryTag: eventArgs.DeliveryTag,
+            multiple: false);
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine();
+        Console.WriteLine("✓ Mesaj başarıyla işlendi.");
+        Console.WriteLine("✓ RabbitMQ ACK gönderildi.");
+        Console.ResetColor();
+
+        Console.WriteLine("──────────────────────────────────────────────────────────────");
+    }
+    catch (Exception ex)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine();
+        Console.WriteLine("✗ Mesaj işlenirken hata oluştu.");
+        Console.WriteLine(ex.Message);
+        Console.ResetColor();
+
+        await channel.BasicNackAsync(
+            deliveryTag: eventArgs.DeliveryTag,
+            multiple: false,
+            requeue: false);
+    }
 };
 
 await channel.BasicConsumeAsync(
@@ -63,12 +108,16 @@ await channel.BasicConsumeAsync(
     autoAck: false,
     consumer: consumer);
 
+Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("BasicJira.MailConsumer çalışıyor.");
-Console.WriteLine($"Exchange   : {exchangeName}");
-Console.WriteLine($"Queue      : {queueName}");
-Console.WriteLine($"Routing key: {routingKey}");
+Console.ResetColor();
+
+Console.WriteLine($"Exchange    : {exchangeName}");
+Console.WriteLine($"Queue       : {queueName}");
+Console.WriteLine($"Routing Key : {routingKey}");
+Console.WriteLine();
 Console.WriteLine("Mesaj bekleniyor...");
-Console.WriteLine("Kapatmak için Ctrl+C.");
+Console.WriteLine("Çıkmak için Ctrl + C");
 
 var shutdown = new TaskCompletionSource(
     TaskCreationOptions.RunContinuationsAsynchronously);
@@ -80,3 +129,27 @@ Console.CancelKeyPress += (_, eventArgs) =>
 };
 
 await shutdown.Task;
+
+static void WriteField(string label, string? value)
+{
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.Write($"  {label,-12}: ");
+
+    Console.ForegroundColor = ConsoleColor.White;
+    Console.WriteLine(value ?? "-");
+
+    Console.ResetColor();
+}
+
+public sealed class SendEmailMessage
+{
+    public Guid MessageId { get; init; }
+
+    public string Recipient { get; init; } = string.Empty;
+
+    public string Subject { get; init; } = string.Empty;
+
+    public string Body { get; init; } = string.Empty;
+
+    public DateTime CreatedAtUtc { get; init; }
+}
