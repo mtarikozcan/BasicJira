@@ -23,7 +23,7 @@ public sealed class RabbitMqController : ControllerBase
     {
         var message = new
         {
-            MessageId = Guid.NewGuid(),
+            MessageId = Guid.NewGuid(),     //anonymous object , ileride typed message.
             request.Recipient,
             request.Subject,
             request.Body,

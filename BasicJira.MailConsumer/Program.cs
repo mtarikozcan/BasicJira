@@ -35,7 +35,7 @@ await channel.QueueBindAsync(
     exchange: exchangeName,
     routingKey: routingKey);
 
-await channel.BasicQosAsync(
+await channel.BasicQosAsync(        // bu kısım kritik çünkü consumer mesajları işleyip ACK verene kadar yenisi gönderilmez.
     prefetchSize: 0,
     prefetchCount: 1,
     global: false);
@@ -45,7 +45,7 @@ var consumer = new AsyncEventingBasicConsumer(channel);
 consumer.ReceivedAsync += async (_, eventArgs) =>
 {   
     var body = eventArgs.Body.ToArray();
-    var message = Encoding.UTF8.GetString(body);    
+    var message = Encoding.UTF8.GetString(body);   
 
     Console.WriteLine();
     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Yeni mesaj alındı:");

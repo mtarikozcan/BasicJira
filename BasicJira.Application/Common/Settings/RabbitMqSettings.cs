@@ -16,7 +16,7 @@ public sealed class RabbitMqSettings
 
     public string Password { get; init; } = string.Empty;
 
-    public string ExchangeName { get; init; } = "basicjira.mail.exchange";
+    public string ExchangeName { get; init; } = "basicjira.mail.exchange";      /// incele
 
     public string QueueName { get; init; } = "basicjira.mail.queue";
 
