@@ -6,6 +6,8 @@ using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using Polly;
+using Polly.Registry;
 
 namespace BasicJira.MailConsumer.Services;
 
@@ -13,16 +15,31 @@ public sealed class EmailService : IEmailService
 {
     private readonly EmailSettings _settings;
     private readonly ILogger<EmailService> _logger;
+    private readonly ResiliencePipeline _retryPipeline;
 
     public EmailService(
         IOptions<EmailSettings> options,
-        ILogger<EmailService> logger)
+        ILogger<EmailService> logger,
+        ResiliencePipelineProvider<string> pipelineProvider)
     {
         _settings = options.Value;
         _logger = logger;
+        _retryPipeline = pipelineProvider.GetPipeline("email-retry");
     }
 
     public async Task SendAsync(
+        SendEmailMessage message,
+        CancellationToken cancellationToken)
+    {
+        await _retryPipeline.ExecuteAsync(
+            async token =>
+            {
+                await SendEmailCoreAsync(message, token);
+            },
+            cancellationToken);
+    }
+
+    private async Task SendEmailCoreAsync(
         SendEmailMessage message,
         CancellationToken cancellationToken)
     {

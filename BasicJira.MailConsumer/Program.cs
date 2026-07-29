@@ -3,8 +3,48 @@ using BasicJira.MailConsumer.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BasicJira.MailConsumer.Interfaces;
+using System.Net.Sockets;
+using MailKit.Net.Smtp;
+using Polly;
+using Polly.Retry;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+builder.Services.AddResiliencePipeline(
+    "email-retry",
+    pipelineBuilder =>
+    {
+        pipelineBuilder.AddRetry(new RetryStrategyOptions
+        {
+            MaxRetryAttempts = 2,
+
+            Delay = TimeSpan.FromSeconds(1),
+
+            BackoffType = DelayBackoffType.Exponential,
+
+            UseJitter = false,
+
+            ShouldHandle = new PredicateBuilder()
+                .Handle<IOException>()
+                .Handle<SocketException>()
+                .Handle<TimeoutException>()
+                .Handle<SmtpProtocolException>(),
+
+            OnRetry = arguments =>
+            {
+                var exception = arguments.Outcome.Exception;
+
+                Console.WriteLine(
+                    "E-posta gönderimi başarısız. " +
+                    "Retry: {0}/2, Bekleme: {1} saniye, Hata: {2}",
+                    arguments.AttemptNumber + 1,
+                    arguments.RetryDelay.TotalSeconds,
+                    exception?.GetType().Name);
+
+                return ValueTask.CompletedTask;
+            }
+        });
+    });
 
 builder.Services
     .AddOptions<RabbitMqSettings>()
@@ -33,6 +73,7 @@ builder.Services
         settings => !string.IsNullOrWhiteSpace(settings.Password),
         "SMTP şifresi boş olamaz.")
     .ValidateOnStart();
+
 
 builder.Services.AddTransient<IEmailService, EmailService>();   //
 
