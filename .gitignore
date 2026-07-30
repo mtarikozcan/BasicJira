@@ -410,3 +410,6 @@ basicjira-localsecrets.txt
 
 #Backup
 basicjira-vault-backup.json 
+
+BasicJira.MailConsumer/appsettings.json
+BasicJira.MailConsumer/appsettings.Development.json

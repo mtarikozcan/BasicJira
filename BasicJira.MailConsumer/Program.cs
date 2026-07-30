@@ -22,8 +22,8 @@ builder.Services.AddResiliencePipeline(
 
             BackoffType = DelayBackoffType.Exponential,
 
-            UseJitter = false,
-
+            UseJitter = false,e
+                
             ShouldHandle = new PredicateBuilder()
                 .Handle<IOException>()
                 .Handle<SocketException>()

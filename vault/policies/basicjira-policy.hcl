@@ -1,7 +1,15 @@
 path "secret/data/basicjira" {
-  capabilities = ["read"]
+  capabilities = ["create", "read", "update", "patch"]
+}
+
+path "secret/data/basicjira/*" {
+  capabilities = ["create", "read", "update", "patch"]
 }
 
 path "secret/metadata/basicjira" {
-  capabilities = ["read"]
+  capabilities = ["read", "list"]
+}
+
+path "secret/metadata/basicjira/*" {
+  capabilities = ["read", "list"]
 }
