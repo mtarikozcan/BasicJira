@@ -1,6 +1,4 @@
-﻿using BasicJira.Application.Common.Exceptions;
-using BasicJira.Application.Common.Interfaces;
-using BasicJira.Domain.Entities;
+﻿using BasicJira.Application.Common.Interfaces;
 using MediatR;
 
 namespace BasicJira.Application.Comments.Commands.DeleteComment;
@@ -23,7 +21,7 @@ public class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentCommand>
         var comment = await _commentRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (comment == null)
-            throw new NotFoundException(nameof(TaskComment), request.Id);
+            throw new Exception("Comment not found.");
 
         _commentRepository.Remove(comment);
 

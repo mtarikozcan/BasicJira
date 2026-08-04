@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-using BasicJira.Application.Common.Exceptions;
 using BasicJira.Application.Common.Interfaces;
 using BasicJira.Application.DTOs;
-using BasicJira.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +27,7 @@ public class GetCommentsByTaskQueryHandler : IRequestHandler<GetCommentsByTaskQu
         var task = await _taskRepository.GetByIdAsync(request.TaskItemId, cancellationToken);
 
         if (task == null)
-            throw new NotFoundException(nameof(TaskItem), request.TaskItemId);
+            throw new Exception("Task not found.");
 
         return await _context.TaskComments
             .AsNoTracking()

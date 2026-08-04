@@ -1,6 +1,4 @@
-﻿using BasicJira.Application.Common.Exceptions;
-using BasicJira.Application.Common.Interfaces;
-using BasicJira.Domain.Entities;
+﻿using BasicJira.Application.Common.Interfaces;
 using MediatR;
 
 namespace BasicJira.Application.Tasks.Commands.AssignUserToTask;
@@ -26,15 +24,12 @@ public class AssignUserToTaskCommandHandler : IRequestHandler<AssignUserToTaskCo
         var task = await _taskRepository.GetByIdAsync(request.TaskId, cancellationToken);
 
         if (task == null)
-            throw new NotFoundException(nameof(TaskItem), request.TaskId);
+            throw new Exception("Task not found.");
 
         var userExists = await _userRepository.ExistsAsync(request.UserId, cancellationToken);
 
         if (!userExists)
-            throw new NotFoundException(nameof(AppUser), request.UserId);
-
-        if (task.AssignedUserId == request.UserId)
-            throw new ConflictException("User is already assigned to this task.");
+            throw new Exception("User not found.");
 
         task.AssignedUserId = request.UserId;
 

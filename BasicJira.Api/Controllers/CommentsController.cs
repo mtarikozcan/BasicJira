@@ -19,34 +19,34 @@ public class CommentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateCommentCommand command)
+    public async Task<IActionResult> Create(CreateCommentCommand command, CancellationToken cancellationToken)
     {
-        var commentId = await _mediator.Send(command);
+        var commentId = await _mediator.Send(command, cancellationToken);
 
         return Ok(commentId);
     }
 
     [HttpGet("task/{taskId:guid}")]
-    public async Task<IActionResult> GetByTask(Guid taskId)
+    public async Task<IActionResult> GetByTask(Guid taskId, CancellationToken cancellationToken)
     {
         var query = new GetCommentsByTaskQuery(taskId);
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UpdateCommentCommand command)
+    public async Task<IActionResult> Update(Guid id, UpdateCommentCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(command with { Id = id });
+        await _mediator.Send(command with { Id = id }, cancellationToken);
 
         return Ok();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new DeleteCommentCommand(id));
+        await _mediator.Send(new DeleteCommentCommand(id), cancellationToken);
 
         return Ok();
     }

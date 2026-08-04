@@ -20,42 +20,42 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateUserCommand command)
+    public async Task<IActionResult> Create(CreateUserCommand command, CancellationToken cancellationToken)
     {
-        var userId = await _mediator.Send(command);
+        var userId = await _mediator.Send(command, cancellationToken);
 
         return Ok(userId);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var users = await _mediator.Send(new GetUsersQuery());
+        var users = await _mediator.Send(new GetUsersQuery(), cancellationToken);
 
         return Ok(users);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetUserByIdQuery(id);
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UpdateUserCommand command)
+    public async Task<IActionResult> Update(Guid id, UpdateUserCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(command with { Id = id });
+        await _mediator.Send(command with { Id = id }, cancellationToken);
 
         return Ok();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new DeleteUserCommand(id));
+        await _mediator.Send(new DeleteUserCommand(id), cancellationToken);
 
         return Ok();
     }

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-using BasicJira.Application.Common.Exceptions;
 using BasicJira.Application.Common.Interfaces; // IAppDbContext için gerekli
 using BasicJira.Application.DTOs;
-using BasicJira.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +27,8 @@ public class GetTaskByIdQueryHandler : IRequestHandler<GetTaskByIdQuery, TaskDto
 
         if (task == null)
         {
-            throw new NotFoundException(nameof(TaskItem), request.Id);
+           
+            throw new Exception("Task not found.");
         }
 
         // Entity'den DTO'na map'leme işlemi

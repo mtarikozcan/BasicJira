@@ -1,6 +1,4 @@
-﻿using BasicJira.Application.Common.Exceptions;
-using BasicJira.Application.Common.Interfaces;
-using BasicJira.Domain.Entities;
+﻿using BasicJira.Application.Common.Interfaces;
 using MediatR;
 
 namespace BasicJira.Application.Tasks.Commands.DeleteTask;
@@ -23,7 +21,7 @@ public class DeleteTaskCommandHandler : IRequestHandler<DeleteTaskCommand>
         var task = await _taskRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (task == null)
-            throw new NotFoundException(nameof(TaskItem), request.Id);
+            throw new Exception("Task not found.");
 
         _taskRepository.Remove(task);
 
