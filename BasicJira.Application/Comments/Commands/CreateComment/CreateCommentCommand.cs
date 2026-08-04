@@ -6,8 +6,6 @@ using MediatR;
 
 namespace BasicJira.Application.Comments.Commands.CreateComment;
 
-public record CreateCommentCommand(
+public sealed record CreateCommentCommand(
     Guid TaskItemId,
-    Guid UserId,
-    string Comment
-) : IRequest<Guid>;
+    string Comment) : IRequest<Guid>;

@@ -5,49 +5,74 @@ using MediatR;
 
 namespace BasicJira.Application.Comments.Commands.CreateComment;
 
-public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, Guid>
+public class CreateCommentCommandHandler
+    : IRequestHandler<CreateCommentCommand, Guid>
 {
     private readonly ITaskRepository _taskRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICommentRepository _commentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUserService _currentUserService;
 
     public CreateCommentCommandHandler(
         ITaskRepository taskRepository,
         IUserRepository userRepository,
         ICommentRepository commentRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService)
     {
         _taskRepository = taskRepository;
         _userRepository = userRepository;
         _commentRepository = commentRepository;
         _unitOfWork = unitOfWork;
+        _currentUserService = currentUserService;
     }
 
-    public async Task<Guid> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(
+        CreateCommentCommand request,
+        CancellationToken cancellationToken)
     {
-        var task = await _taskRepository.GetByIdAsync(request.TaskItemId, cancellationToken);
+        var currentUserId = _currentUserService.UserId
+            ?? throw new UnauthorizedAccessException(
+                "Authenticated user information could not be found.");
 
-        if (task == null)
-            throw new NotFoundException(nameof(TaskItem), request.TaskItemId);
+        var task = await _taskRepository.GetByIdAsync(
+            request.TaskItemId,
+            cancellationToken);
 
-        var userExists = await _userRepository.ExistsAsync(request.UserId, cancellationToken);
+        if (task is null)
+        {
+            throw new NotFoundException(
+                nameof(TaskItem),
+                request.TaskItemId);
+        }
+
+        var userExists = await _userRepository.ExistsAsync(
+            currentUserId,
+            cancellationToken);
 
         if (!userExists)
-            throw new NotFoundException(nameof(AppUser), request.UserId);
+        {
+            throw new NotFoundException(
+                nameof(AppUser),
+                currentUserId);
+        }
 
         var comment = new TaskComment
         {
             Id = Guid.NewGuid(),
             TaskItemId = request.TaskItemId,
-            UserId = request.UserId,
+            UserId = currentUserId,
             Comment = request.Comment,
             CreatedAt = DateTime.UtcNow
         };
 
-        await _commentRepository.AddAsync(comment, cancellationToken);
+        await _commentRepository.AddAsync(
+            comment,
+            cancellationToken);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(
+            cancellationToken);
 
         return comment.Id;
     }
