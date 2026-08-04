@@ -1,4 +1,5 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
 using BasicJira.Domain.Entities;
 using BasicJira.Domain.Enums;
 using MediatR;
@@ -29,14 +30,14 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, Guid>
         var projectExists = await _projectRepository.ExistsAsync(request.ProjectId, cancellationToken);
 
         if (!projectExists)
-            throw new Exception("Project not found.");
+            throw new NotFoundException(nameof(Project), request.ProjectId);
 
         if (request.AssignedUserId.HasValue)
         {
             var userExists = await _userRepository.ExistsAsync(request.AssignedUserId.Value, cancellationToken);
 
             if (!userExists)
-                throw new Exception("Assigned user not found.");
+                throw new NotFoundException(nameof(AppUser), request.AssignedUserId.Value);
         }
 
         var task = new TaskItem

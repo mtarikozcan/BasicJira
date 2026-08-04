@@ -1,4 +1,6 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
+using BasicJira.Domain.Entities;
 using MediatR;
 
 namespace BasicJira.Application.Comments.Commands.UpdateComment;
@@ -21,7 +23,7 @@ public class UpdateCommentCommandHandler : IRequestHandler<UpdateCommentCommand>
         var comment = await _commentRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (comment == null)
-            throw new Exception("Comment not found.");
+            throw new NotFoundException(nameof(TaskComment), request.Id);
 
         comment.Comment = request.Comment;
 

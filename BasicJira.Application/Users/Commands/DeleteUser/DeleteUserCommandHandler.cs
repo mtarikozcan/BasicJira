@@ -1,4 +1,6 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
+using BasicJira.Domain.Entities;
 using MediatR;
 
 namespace BasicJira.Application.Users.Commands.DeleteUser;
@@ -21,7 +23,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
         var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (user == null)
-            throw new Exception("User not found.");
+            throw new NotFoundException(nameof(AppUser), request.Id);
 
         _userRepository.Remove(user);
 

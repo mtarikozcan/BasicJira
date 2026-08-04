@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
+using BasicJira.Application.Common.Exceptions;
 using BasicJira.Application.Common.Interfaces;
 using BasicJira.Application.DTOs;
+using BasicJira.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +28,7 @@ public class GetProjectByIdQueryHandler : IRequestHandler<GetProjectByIdQuery, P
 
         if (project == null)
         {
-            throw new Exception("Project not found.");
+            throw new NotFoundException(nameof(Project), request.Id);
         }
 
         return new ProjectDto

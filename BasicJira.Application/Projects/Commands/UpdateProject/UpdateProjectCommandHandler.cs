@@ -1,4 +1,6 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
+using BasicJira.Domain.Entities;
 using MediatR;
 
 namespace BasicJira.Application.Projects.Commands.UpdateProject;
@@ -21,7 +23,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand>
         var project = await _projectRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (project == null)
-            throw new Exception("Project not found.");
+            throw new NotFoundException(nameof(Project), request.Id);
 
         project.Name = request.Name;
         project.Description = request.Description;
