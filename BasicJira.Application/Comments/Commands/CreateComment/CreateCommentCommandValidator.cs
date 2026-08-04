@@ -13,9 +13,6 @@ public class CreateCommentCommandValidator
         RuleFor(x => x.TaskItemId)
             .NotEmpty();
 
-        RuleFor(x => x.UserId)
-            .NotEmpty();
-
         RuleFor(x => x.Comment)
             .NotEmpty()
             .MinimumLength(3);

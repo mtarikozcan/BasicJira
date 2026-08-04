@@ -1,5 +1,7 @@
 using BasicJira.Api.Configuration;
 using BasicJira.Api.Middleware;
+using BasicJira.Api.Services;
+using BasicJira.Application.Common.Interfaces;  
 using BasicJira.Application;
 using BasicJira.Infrastructure;
 using Microsoft.OpenApi;
@@ -54,6 +56,12 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<
+    ICurrentUserService,
+    CurrentUserService>();
 
 var app = builder.Build();
 
