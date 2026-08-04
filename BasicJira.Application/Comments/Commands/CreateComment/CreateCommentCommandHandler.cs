@@ -1,4 +1,5 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
 using BasicJira.Domain.Entities;
 using MediatR;
 
@@ -28,12 +29,12 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
         var task = await _taskRepository.GetByIdAsync(request.TaskItemId, cancellationToken);
 
         if (task == null)
-            throw new Exception("Task not found.");
+            throw new NotFoundException(nameof(TaskItem), request.TaskItemId);
 
         var userExists = await _userRepository.ExistsAsync(request.UserId, cancellationToken);
 
         if (!userExists)
-            throw new Exception("User not found.");
+            throw new NotFoundException(nameof(AppUser), request.UserId);
 
         var comment = new TaskComment
         {
