@@ -25,83 +25,83 @@ public class TasksController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateTaskCommand command)
+    public async Task<IActionResult> Create(CreateTaskCommand command, CancellationToken cancellationToken)
     {
-        var taskId = await _mediator.Send(command);
+        var taskId = await _mediator.Send(command, cancellationToken);
 
         return Ok(taskId);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var tasks = await _mediator.Send(new GetTasksQuery());
+        var tasks = await _mediator.Send(new GetTasksQuery(), cancellationToken);
 
         return Ok(tasks);
     }
 
     [HttpGet("project/{projectId:guid}")]
-    public async Task<IActionResult> GetByProjectId(Guid projectId)
+    public async Task<IActionResult> GetByProjectId(Guid projectId, CancellationToken cancellationToken)
     {
         var query = new GetTasksByProjectIdQuery(projectId);
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetTaskByIdQuery(id);
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UpdateTaskCommand command)
+    public async Task<IActionResult> Update(Guid id, UpdateTaskCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(command with { Id = id });
+        await _mediator.Send(command with { Id = id }, cancellationToken);
 
         return Ok();
     }
 
     [HttpPut("{id:guid}/assign-user/{userId:guid}")]
-    public async Task<IActionResult> AssignUser(Guid id, Guid userId)
+    public async Task<IActionResult> AssignUser(Guid id, Guid userId, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new AssignUserToTaskCommand(id, userId));
+        await _mediator.Send(new AssignUserToTaskCommand(id, userId), cancellationToken);
 
         return Ok();
     }
 
     [HttpPut("{id:guid}/priority")]
-    public async Task<IActionResult> ChangePriority(Guid id, ChangeTaskPriorityCommand command)
+    public async Task<IActionResult> ChangePriority(Guid id, ChangeTaskPriorityCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(command with { TaskId = id });
+        await _mediator.Send(command with { TaskId = id }, cancellationToken);
 
         return Ok();
     }
 
     [HttpPut("{id:guid}/status")]
-    public async Task<IActionResult> ChangeStatus(Guid id, ChangeTaskStatusCommand command)
+    public async Task<IActionResult> ChangeStatus(Guid id, ChangeTaskStatusCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(command with { TaskId = id });
+        await _mediator.Send(command with { TaskId = id }, cancellationToken);
 
         return Ok();
     }
 
     [HttpPut("{id:guid}/unassign-user")]
-    public async Task<IActionResult> UnassignUser(Guid id)
+    public async Task<IActionResult> UnassignUser(Guid id, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new UnassignUserFromTaskCommand(id));
+        await _mediator.Send(new UnassignUserFromTaskCommand(id), cancellationToken);
 
         return Ok();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new DeleteTaskCommand(id));
+        await _mediator.Send(new DeleteTaskCommand(id), cancellationToken);
 
         return Ok();
     }

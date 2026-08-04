@@ -20,41 +20,41 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateProjectCommand command)
+    public async Task<IActionResult> Create(CreateProjectCommand command, CancellationToken cancellationToken)
     {
-        var projectId = await _mediator.Send(command);
+        var projectId = await _mediator.Send(command, cancellationToken);
 
         return Ok(projectId);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var projects = await _mediator.Send(new GetProjectsQuery());
+        var projects = await _mediator.Send(new GetProjectsQuery(), cancellationToken);
         return Ok(projects);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetProjectByIdQuery(id);
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return Ok(result);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UpdateProjectCommand command)
+    public async Task<IActionResult> Update(Guid id, UpdateProjectCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(command with { Id = id });
+        await _mediator.Send(command with { Id = id }, cancellationToken);
 
         return Ok();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new DeleteProjectCommand(id));
+        await _mediator.Send(new DeleteProjectCommand(id), cancellationToken);
 
         return Ok();
     }

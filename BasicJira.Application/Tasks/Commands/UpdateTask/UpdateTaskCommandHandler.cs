@@ -1,6 +1,4 @@
-﻿using BasicJira.Application.Common.Exceptions;
-using BasicJira.Application.Common.Interfaces;
-using BasicJira.Domain.Entities;
+﻿using BasicJira.Application.Common.Interfaces;
 using MediatR;
 
 namespace BasicJira.Application.Tasks.Commands.UpdateTask;
@@ -29,19 +27,19 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand>
         var task = await _taskRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (task == null)
-            throw new NotFoundException(nameof(TaskItem), request.Id);
+            throw new Exception("Task not found.");
 
         var projectExists = await _projectRepository.ExistsAsync(request.ProjectId, cancellationToken);
 
         if (!projectExists)
-            throw new NotFoundException(nameof(Project), request.ProjectId);
+            throw new Exception("Project not found.");
 
         if (request.AssignedUserId.HasValue)
         {
             var userExists = await _userRepository.ExistsAsync(request.AssignedUserId.Value, cancellationToken);
 
             if (!userExists)
-                throw new NotFoundException(nameof(AppUser), request.AssignedUserId.Value);
+                throw new Exception("Assigned user not found.");
         }
 
         task.ProjectId = request.ProjectId;
