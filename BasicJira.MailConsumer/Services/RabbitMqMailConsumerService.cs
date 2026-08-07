@@ -8,6 +8,10 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
+using BasicJira.MailConsumer.Persistence;
+using BasicJira.MailConsumer.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection; 
 
 namespace BasicJira.MailConsumer.Services;
 
@@ -16,6 +20,7 @@ public sealed class RabbitMqMailConsumerService : BackgroundService
     private readonly RabbitMqSettings _settings;
     private readonly ILogger<RabbitMqMailConsumerService> _logger;
     private readonly IEmailService _emailService;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     private IConnection? _connection;
     private IChannel? _channel;
@@ -23,11 +28,13 @@ public sealed class RabbitMqMailConsumerService : BackgroundService
     public RabbitMqMailConsumerService(
     IOptions<RabbitMqSettings> options,
     ILogger<RabbitMqMailConsumerService> logger,
-    IEmailService emailService)
+    IEmailService emailService,
+    IServiceScopeFactory scopeFactory)
     {
         _settings = options.Value;
         _logger = logger;
         _emailService = emailService;
+        _scopeFactory = scopeFactory;
     }
 
     protected override async Task ExecuteAsync(
@@ -140,19 +147,55 @@ public sealed class RabbitMqMailConsumerService : BackgroundService
                     "RabbitMQ mesajı deserialize edilemedi.");
             }
 
+            await using var scope = _scopeFactory.CreateAsyncScope();
+
+            var dbContext =
+                scope.ServiceProvider.GetRequiredService<MailConsumerDbContext>();
+
+            var alreadyProcessed = await dbContext.ProcessedMessages
+                .AnyAsync(
+                    x => x.MessageId == message.MessageId,
+                    cancellationToken);
+
+            if (alreadyProcessed)
+            {
+                _logger.LogWarning(
+                    "Duplicate RabbitMQ mesajı tespit edildi. Mesaj tekrar işlenmeyecek. MessageId: {MessageId}",
+                    message.MessageId);
+
+                await _channel.BasicAckAsync(
+                    deliveryTag: eventArgs.DeliveryTag,
+                    multiple: false,
+                    cancellationToken: cancellationToken);
+
+                return;
+            }
+
             PrintMessage(message);
 
             await _emailService.SendAsync(
                 message,
                 cancellationToken);
+
+            dbContext.ProcessedMessages.Add(
+                new ProcessedMessage
+                {
+                    MessageId = message.MessageId,
+                    ProcessedAtUtc = DateTime.UtcNow
+                });
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
             await _channel.BasicAckAsync(
                 deliveryTag: eventArgs.DeliveryTag,
                 multiple: false,
                 cancellationToken: cancellationToken);
 
             _logger.LogInformation(
-                "RabbitMQ mesajı işlendi ve ACK gönderildi. MessageId: {MessageId}",
+                "RabbitMQ mesajı işlendi, idempotency kaydı oluşturuldu ve ACK gönderildi. MessageId: {MessageId}",
                 message.MessageId);
+
+           
         }
         catch (OperationCanceledException)
             when (cancellationToken.IsCancellationRequested)
