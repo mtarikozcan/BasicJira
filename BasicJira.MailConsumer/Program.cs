@@ -1,14 +1,23 @@
-﻿using BasicJira.MailConsumer.Services;
+﻿using BasicJira.MailConsumer.Interfaces;
+using BasicJira.MailConsumer.Persistence;
+using BasicJira.MailConsumer.Services;
 using BasicJira.MailConsumer.Settings;
+using MailKit.Net.Smtp;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BasicJira.MailConsumer.Interfaces;
-using System.Net.Sockets;
-using MailKit.Net.Smtp;
 using Polly;
 using Polly.Retry;
+using System.Net.Sockets;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<MailConsumerDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddResiliencePipeline(
     "email-retry",
