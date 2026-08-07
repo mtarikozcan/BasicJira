@@ -1,4 +1,6 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
+using BasicJira.Domain.Entities;
 using MediatR;
 
 namespace BasicJira.Application.Tasks.Commands.ChangeTaskPriority;
@@ -21,7 +23,7 @@ public class ChangeTaskPriorityCommandHandler : IRequestHandler<ChangeTaskPriori
         var task = await _taskRepository.GetByIdAsync(request.TaskId, cancellationToken);
 
         if (task == null)
-            throw new Exception("Task not found.");
+            throw new NotFoundException(nameof(TaskItem), request.TaskId);
 
         task.Priority = request.Priority;
 
