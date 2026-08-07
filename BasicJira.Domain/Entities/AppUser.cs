@@ -22,6 +22,9 @@ public class AppUser
      
     public ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
 
+    public ICollection<ProjectMember> ProjectMemberships { get; set; }
+    = new List<ProjectMember>();
+
 
 }
 

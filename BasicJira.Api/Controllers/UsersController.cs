@@ -5,11 +5,14 @@ using BasicJira.Application.Users.Queries.GetUserById;
 using BasicJira.Application.Users.Queries.GetUsers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using BasicJira.Application.Common.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BasicJira.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = Roles.Admin)]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;

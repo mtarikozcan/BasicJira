@@ -4,11 +4,14 @@ using BasicJira.Application.Comments.Commands.UpdateComment;
 using BasicJira.Application.Comments.Queries.GetCommentsByTask;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using BasicJira.Application.Common.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BasicJira.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CommentsController : ControllerBase
 {
     private readonly IMediator _mediator;

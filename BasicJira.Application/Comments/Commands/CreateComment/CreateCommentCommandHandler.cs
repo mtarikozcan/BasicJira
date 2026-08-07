@@ -1,7 +1,9 @@
-﻿using BasicJira.Application.Common.Exceptions;
+﻿using BasicJira.Application.Common.Authorization;
+using BasicJira.Application.Common.Exceptions;
 using BasicJira.Application.Common.Interfaces;
 using BasicJira.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace BasicJira.Application.Comments.Commands.CreateComment;
 
@@ -13,12 +15,14 @@ public class CreateCommentCommandHandler
     private readonly ICommentRepository _commentRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IAppDbContext _context;
 
     public CreateCommentCommandHandler(
         ITaskRepository taskRepository,
         IUserRepository userRepository,
         ICommentRepository commentRepository,
         IUnitOfWork unitOfWork,
+        IAppDbContext context,
         ICurrentUserService currentUserService)
     {
         _taskRepository = taskRepository;
@@ -26,6 +30,7 @@ public class CreateCommentCommandHandler
         _commentRepository = commentRepository;
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
+        _context = context;
     }
 
     public async Task<Guid> Handle(
@@ -45,6 +50,23 @@ public class CreateCommentCommandHandler
             throw new NotFoundException(
                 nameof(TaskItem),
                 request.TaskItemId);
+        }
+
+        if (_currentUserService.Role != Roles.Admin)
+        {
+            var isMember = await _context.ProjectMembers
+                .AsNoTracking()
+                .AnyAsync(
+                    member =>
+                        member.ProjectId == task.ProjectId &&
+                        member.UserId == currentUserId,
+                    cancellationToken);
+
+            if (!isMember)
+            {
+                throw new ForbiddenException(
+                    "You are not a member of the project that contains this task.");
+            }
         }
 
         var userExists = await _userRepository.ExistsAsync(

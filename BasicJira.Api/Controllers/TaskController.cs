@@ -7,6 +7,8 @@ using BasicJira.Application.Tasks.Commands.UnassignUserFromTask;
 using BasicJira.Application.Tasks.Commands.UpdateTask;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using BasicJira.Application.Common.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using BasicJira.Application.Tasks.Queries.GetTaskById;
 using BasicJira.Application.Tasks.Queries.GetTasks;
 using BasicJira.Application.Tasks.Queries.GetTasksByProjectId;
@@ -15,6 +17,7 @@ namespace BasicJira.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TasksController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -24,6 +27,7 @@ public class TasksController : ControllerBase
         _mediator = mediator;
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPost]
     public async Task<IActionResult> Create(CreateTaskCommand command, CancellationToken cancellationToken)
     {
@@ -58,6 +62,7 @@ public class TasksController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, UpdateTaskCommand command, CancellationToken cancellationToken)
     {
@@ -66,6 +71,7 @@ public class TasksController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("{id:guid}/assign-user/{userId:guid}")]
     public async Task<IActionResult> AssignUser(Guid id, Guid userId, CancellationToken cancellationToken)
     {
@@ -74,6 +80,7 @@ public class TasksController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("{id:guid}/priority")]
     public async Task<IActionResult> ChangePriority(Guid id, ChangeTaskPriorityCommand command, CancellationToken cancellationToken)
     {
@@ -90,6 +97,7 @@ public class TasksController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("{id:guid}/unassign-user")]
     public async Task<IActionResult> UnassignUser(Guid id, CancellationToken cancellationToken)
     {
@@ -98,6 +106,7 @@ public class TasksController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

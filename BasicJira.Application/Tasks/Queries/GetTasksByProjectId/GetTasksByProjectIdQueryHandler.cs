@@ -4,6 +4,8 @@ using System.Text;
 
 using BasicJira.Application.Common.Exceptions;
 using BasicJira.Application.Common.Interfaces;
+using BasicJira.Application.Common.Authorization;
+using Microsoft.EntityFrameworkCore;
 using BasicJira.Application.DTOs;
 using BasicJira.Domain.Entities;
 using MediatR;
@@ -14,6 +16,8 @@ public class GetTasksByProjectIdQueryHandler : IRequestHandler<GetTasksByProject
 {
     private readonly IProjectRepository _projectRepository;
     private readonly ITaskRepository _taskRepository;
+    private readonly IAppDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
     public GetTasksByProjectIdQueryHandler(
         IProjectRepository projectRepository,
@@ -29,6 +33,25 @@ public class GetTasksByProjectIdQueryHandler : IRequestHandler<GetTasksByProject
 
         if (!projectExists)
             throw new NotFoundException(nameof(Project), request.ProjectId);
+
+        if (_currentUserService.Role != Roles.Admin)
+        {
+            var currentUserId = _currentUserService.UserId
+                ?? throw new ForbiddenException();
+
+            var isMember = await _context.ProjectMembers
+                .AsNoTracking()
+                .AnyAsync(
+                    member =>
+                        member.ProjectId == request.ProjectId &&
+                        member.UserId == currentUserId,
+                    cancellationToken);
+
+            if (!isMember)
+            {
+                throw new ForbiddenException("You are not a member of this project.");
+            }
+        }
 
         var tasks = await _taskRepository.GetByProjectIdAsync(request.ProjectId, cancellationToken);
 

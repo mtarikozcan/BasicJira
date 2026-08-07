@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using BasicJira.Domain.Entities;
+﻿using BasicJira.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BasicJira.Application.Common.Interfaces;
 
 public interface IAppDbContext
-{ 
-    // these DbSets represent the tables that Application handlers need to access.
+{
     DbSet<Project> Projects { get; }
 
     DbSet<AppUser> Users { get; }
@@ -18,12 +13,9 @@ public interface IAppDbContext
 
     DbSet<TaskComment> TaskComments { get; }
 
+    DbSet<ProjectMember> ProjectMembers { get; }
 
-    // Generic repository needs this method to access the correct DbSet dynamically.
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
-    // handlers call this after Add/Update/Delete operations.
-
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-
 }
