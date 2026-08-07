@@ -2,11 +2,14 @@
 using BasicJira.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using BasicJira.Contracts.Messages;
+using BasicJira.Application.Common.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BasicJira.Api.Controllers;
 
 [ApiController]
 [Route("api/rabbitmq")]
+[Authorize(Roles = Roles.Admin)]
 public sealed class RabbitMqController : ControllerBase
 {
     private readonly IMessagePublisher _messagePublisher;
