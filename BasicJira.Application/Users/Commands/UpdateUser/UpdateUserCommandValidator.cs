@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using FluentValidation;
+using BasicJira.Application.Common.Authorization;
 
 namespace BasicJira.Application.Users.Commands.UpdateUser;
 
@@ -22,6 +23,8 @@ public class UpdateUserCommandValidator
             .EmailAddress();
 
         RuleFor(x => x.Role)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(role => role == Roles.Admin || role == Roles.User)
+            .WithMessage("Role must be either 'Admin' or 'User'.");
     }
 }

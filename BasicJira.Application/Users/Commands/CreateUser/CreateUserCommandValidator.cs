@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using FluentValidation;
+using BasicJira.Application.Common.Authorization;
 
 namespace BasicJira.Application.Users.Commands.CreateUser;
 
@@ -19,6 +20,8 @@ public class CreateUserCommandValidator
             .EmailAddress();
 
         RuleFor(x => x.Role)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(role => role == Roles.Admin || role == Roles.User)
+            .WithMessage("Role must be either 'Admin' or 'User'.");
     }
 }
