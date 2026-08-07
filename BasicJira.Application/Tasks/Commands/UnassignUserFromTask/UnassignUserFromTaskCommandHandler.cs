@@ -1,4 +1,6 @@
-﻿using BasicJira.Application.Common.Interfaces;
+﻿using BasicJira.Application.Common.Exceptions;
+using BasicJira.Application.Common.Interfaces;
+using BasicJira.Domain.Entities;
 using MediatR;
 
 namespace BasicJira.Application.Tasks.Commands.UnassignUserFromTask;
@@ -21,7 +23,7 @@ public class UnassignUserFromTaskCommandHandler : IRequestHandler<UnassignUserFr
         var task = await _taskRepository.GetByIdAsync(request.TaskId, cancellationToken);
 
         if (task == null)
-            throw new Exception("Task not found.");
+            throw new NotFoundException(nameof(TaskItem), request.TaskId);
 
         task.AssignedUserId = null;
 

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
+using BasicJira.Application.Common.Exceptions;
 using BasicJira.Application.Common.Interfaces;
 using BasicJira.Application.DTOs;
+using BasicJira.Domain.Entities;
 using MediatR;
 
 namespace BasicJira.Application.Tasks.Queries.GetTasksByProjectId;
@@ -26,7 +28,7 @@ public class GetTasksByProjectIdQueryHandler : IRequestHandler<GetTasksByProject
         var projectExists = await _projectRepository.ExistsAsync(request.ProjectId, cancellationToken);
 
         if (!projectExists)
-            throw new Exception("Project not found.");
+            throw new NotFoundException(nameof(Project), request.ProjectId);
 
         var tasks = await _taskRepository.GetByProjectIdAsync(request.ProjectId, cancellationToken);
 
