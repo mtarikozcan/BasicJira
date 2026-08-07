@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using BasicJira.Application.Common.Interfaces;
+using BasicJira.Application.Common.Authorization;
+using BasicJira.Application.Common.Exceptions;
 using BasicJira.Application.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +16,14 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, List<Pr
 
 {
     private readonly IAppDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetProjectsQueryHandler(IAppDbContext context)
+    public GetProjectsQueryHandler(
+        IAppDbContext context,
+        ICurrentUserService currentUserService)
     {
         _context = context;     // sistemin veritabanıyla konuşabilmesi için IAppDbContext constructor içeriye alınır. Dependecy Injection
-
+        _currentUserService = currentUserService;
     }
 
     public async Task<List<ProjectDto>> Handle(    // request geldiğinde mediatR bu metodu otomatik planda çalıştırır.
@@ -30,8 +35,22 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, List<Pr
         // AsNoTracking -> Sadece okuma yaptığımız için EF Core'un change tracking yapmasına gerek yok.
         // Bu şekilde query performansı artar. 
 
-        return await _context.Projects
+        var query = _context.Projects
             .AsNoTracking()
+            .AsQueryable();
+
+        if (_currentUserService.Role != Roles.Admin)
+        {
+            var currentUserId = _currentUserService.UserId
+                ?? throw new ForbiddenException();
+
+            query = query.Where(project =>
+                _context.ProjectMembers.Any(member =>
+                    member.ProjectId == project.Id &&
+                    member.UserId == currentUserId));
+        }
+
+        return await query
             .Select(project => new ProjectDto
             {
                 Id = project.Id,
