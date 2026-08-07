@@ -29,6 +29,8 @@ public class AppDbContext : DbContext, IAppDbContext, IUnitOfWork
 
     public DbSet<TaskComment> TaskComments { get; set; }
 
+    public DbSet<ProjectMember> ProjectMembers { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -49,6 +51,21 @@ public class AppDbContext : DbContext, IAppDbContext, IUnitOfWork
             .WithMany(x => x.AssignedTasks)
             .HasForeignKey(x => x.AssignedUserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProjectMember>()
+            .HasKey(x => new { x.ProjectId, x.UserId });
+
+        modelBuilder.Entity<ProjectMember>()
+            .HasOne(x => x.Project)
+            .WithMany(x => x.Members)
+            .HasForeignKey(x => x.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ProjectMember>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.ProjectMemberships)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
