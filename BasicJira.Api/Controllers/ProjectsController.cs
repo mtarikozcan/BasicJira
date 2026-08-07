@@ -2,7 +2,11 @@
 using BasicJira.Application.Projects.Commands.DeleteProject;
 using BasicJira.Application.Projects.Commands.UpdateProject;
 using BasicJira.Application.Projects.Queries.GetProjectById;
-using BasicJira.Application.Projects.Queries.GetProjects;   
+using BasicJira.Application.Projects.Queries.GetProjects;
+using BasicJira.Application.Common.Authorization;
+using BasicJira.Application.Projects.Commands.AddProjectMember;
+using BasicJira.Application.Projects.Commands.RemoveProjectMember;
+using Microsoft.AspNetCore.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -59,6 +63,33 @@ public class ProjectsController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = Roles.Admin)]
+    [HttpPost("{projectId:guid}/members/{userId:guid}")]
+    public async Task<IActionResult> AddMember(
+    Guid projectId,
+    Guid userId,
+    CancellationToken cancellationToken)
+    {
+        await _mediator.Send(
+            new AddProjectMemberCommand(projectId, userId),
+            cancellationToken);
+
+        return NoContent();
+    }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpDelete("{projectId:guid}/members/{userId:guid}")]
+    public async Task<IActionResult> RemoveMember(
+        Guid projectId,
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(
+            new RemoveProjectMemberCommand(projectId, userId),
+            cancellationToken);
+
+        return NoContent();
+    }
 
 }
 
